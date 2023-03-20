@@ -76,5 +76,3 @@ def maskgen(M,N):
     pic = np.around(np.array(pic)-0.1,0)
     return pic
 
-plt.imshow(maskgen(100,200), cmap='gray')
-plt.show()
