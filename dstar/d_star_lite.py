@@ -63,7 +63,7 @@ class d_star:
         for point in points:
             self.state[point[0]][point[1]] = WALL
             self.rhs[point] = inf
-            self.rhs[self.start] = 100
+            self.rhs[self.start] = 200
             for n in self.get_neighbors(point):
                 self.rhs[point] = inf
                 self.update_vertex(n)
@@ -120,13 +120,14 @@ class d_star:
 
         path = [self.start]
         worklist = [self.start]
-        path = self.rec_path(worklist, path)
+        path = self.rec_path2(worklist, path, db)
 
         return path
 
-    def rec_path(self, worklist, path):
-        node = worklist.pop()
-        # print(node)
+    def rec_path2(self, worklist, path, db=False):
+        node = worklist.pop(0)
+        if db:
+            print(node)
         if node == self.end:
             return path
         else:
@@ -141,4 +142,7 @@ class d_star:
                 if best_rhs[i] == min(best_rhs):
                     path.append(best_nodes[i])
                     worklist.append(best_nodes[i])
-                    return self.rec_path2(worklist, path)
+                    val = self.rec_path2(worklist.copy(), path.copy(), db)
+                    if not None:
+                        return val
+                    
