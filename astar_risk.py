@@ -1,112 +1,32 @@
-import random
 import numpy as np
-from perlin_noise import PerlinNoise
 import matplotlib.pyplot as plt
-
-RISKY = -1
-WALL = 0
-UNKNOWN = 1
-ONDECK = 2
-PROCESSED = 3
-
-m_dist = lambda x1, x2: abs(x1[0]-x2[0]) + abs(x1[1]-x2[1])
-
-def build_path(goal, pnodes):
-    # Start the path at the end
-    path = [goal]
-    current = goal
-    
-    # While the current node has one before it, add the prior
-    # node to the path then redo the check with this node
-    while pnodes[current] != None:
-        path.append(pnodes[current])
-        current = pnodes[current]
-    
-    # Once the start node is reached, reverse the path (start -> goal) and return
-    path.reverse()
-    return path
+from utils import *
 
 def astar(start, goal, s, c, c_path):
     state = s.copy()
     costmap = c.copy()
-    # Tracks which nodes are in ondeck and when they were added to ondeck
     ondeck = [(start, 0)]
-    # For any node, stores the node prior to it
     prior_node = {start:None}
-    
-    # While there is a node that has not been fully processed, process it
+
     while ondeck:
-        # Sort ondeck by the path cost for each node, so the first entry
-        # has the lowest path cost, then get the first entry 
         ondeck.sort(key=c_path)
         current, cur_cost = ondeck.pop(0)
         
         if current == goal:
             state[current] = PROCESSED
-            # Return the path used to get to the goal and the state
             return (build_path(goal, prior_node), state)
         
-        # Get the next nodes in each direction (up down left right)
-        for i in (-1,1): # -1 for up/left, +1 for down/right
-            for axis in (0, 1): # axis 0 for right/left, 1 for up/down
-                
-                # Find the next node in the specified direction
-                nnode = (current[0] + (i if axis==1 else 0),
-                         current[1] + (i if axis==0 else 0))
-                
-                # If the node has not been seen yet, add to ondeck and track
-                # the node used to get to this one (the current node)
+        for d in [(0,1),(0,-1),(1,0),(-1,0)]:
+            nnode = (current[0] + d[0], current[1] + d[1])
+            if 0<=nnode[0]<len(state) and 0<=nnode[1]<len(state[0]):
                 if state[nnode] == UNKNOWN:
                     state[nnode] = ONDECK
                     ondeck.append((nnode, cur_cost + costmap[nnode]))
                     prior_node[nnode] = current
         
-        # Mark the node as processed, check if we've reached the goal, then continue
         state[current] = PROCESSED
     
-    # If a path could not be found
     return (None, state)
-
-def generate_world(M, N, wall_prob = 0.1, adj_prob = 0.4):
-    state = np.ones((M, N)) * UNKNOWN
-    costmap = -np.ones((M,N))
-
-
-    state[ 0,0:] = WALL
-    state[-1,0:] = WALL
-    state[0:, 0] = WALL
-    state[0:,-1] = WALL
-
-    for i in range(1, M-1):
-        for j in range(1, N-1):
-            if random.randint(1,100) < wall_prob * 100:
-                state[i, j] = WALL
-            else:
-                if state[i+1, j] == WALL or state[i-1, j] == WALL or state[i, j+1] == WALL or state[i, j-1] == WALL:
-                    if random.randint(1,100) < adj_prob * 100:
-                        state[i, j] = WALL
-            if state[i,j] != WALL:
-                costmap[i,j] = random.randint(1,10)
-
-    start = (random.randint(1,M-1), random.randint(1,N-1))
-    while state[start] == WALL:
-        start = (random.randint(1,M-1), random.randint(1,N-1))
-    end = (random.randint(1,M-1), random.randint(1,N-1))
-    while state[end] == WALL:
-        end = (random.randint(1,M-1), random.randint(1,N-1))
-
-    mask = maskgen(M,N)
-    return state, costmap, mask, start, end
-
-def maskgen(M,N):
-    noise = PerlinNoise(octaves=10, seed=1)
-    xpix, ypix = N, M
-    pic = np.array([[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)])
-    pic -= np.min(pic)
-    pic /= np.ptp(pic)
-    pic = np.around(np.array(pic)-0.1,0)
-    return pic
-
 
 def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
     state = s.copy()
