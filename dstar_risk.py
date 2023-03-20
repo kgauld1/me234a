@@ -1,19 +1,14 @@
 from utils import *
 from d_star_lite import d_star
 
-
 def replan_path(dstarobj, state, replan_ctr=0):
     path = dstarobj.get_path()
     if path == None: 
         return path, replan_ctr
-    _, axs = plt.subplots(1, 1, figsize=(6, 9))
-    show_path(path,state,axs)
-    plt.show()
     for p in path:
         if state[p] == WALL:
             print("REPLANNING!")
             dstarobj.replan([p])
-            print(p)
             return replan_path(dstarobj, state, replan_ctr=replan_ctr+1)
     return path, replan_ctr
 
@@ -27,29 +22,20 @@ def run_all_planners(N,M):
     norisk_path = dstar_norisk.get_path()
 
     dstar_opp = d_star(maskstate.copy(), costmap.copy(), start, goal)
-    opp_path, opp_ctr = replan_path(dstar_opp, state) #dstar_opp.get_path()
+    opp_path, opp_ctr = replan_path(dstar_opp, state)
 
     costmap2 = costmap.copy()
     costmap2[np.where(mask==1)] = 10**6
     dstar_av = d_star(maskstate.copy(), costmap2, start, goal)
-    av_path, av_ctr = replan_path(dstar_av, state) #dstar_av.get_path()
+    av_path, av_ctr = replan_path(dstar_av, state)
 
     costmap3 = costmap.copy()
     costmap3[np.where(mask==1)] = 10
     dstar_med = d_star(maskstate.copy(), costmap3, start, goal)
-    med_path, med_ctr = replan_path(dstar_med, state) #dstar_med.get_path()
+    med_path, med_ctr = replan_path(dstar_med, state)
 
     return state, maskstate, costmap, norisk_path, \
         opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr
-
-
-
-def show_path(path, state, ax):
-    drawstate = state.copy()
-    for p in path:
-        drawstate[p] = float('inf')
-    ax.imshow(drawstate)
-    #plt.show()
 
 if __name__ == "__main__":
     state, maskstate, costmap, norisk_path, opp_path, opp_ctr, \
@@ -88,7 +74,7 @@ if __name__ == "__main__":
     if med_path != None:
         print("MODERATE PATH LEN:", len(med_path), 
             "\tPROPORTION:", len(med_path)/len(norisk_path),
-            "\tREPLANS:", opp_ctr)
+            "\tREPLANS:", med_ctr)
         show_path(med_path, maskstate, axs[3])
     else:
         print("NO MODERATE PATH FOUND")

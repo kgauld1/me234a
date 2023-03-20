@@ -67,3 +67,10 @@ def maskgen(M,N):
     pic /= np.ptp(pic)
     pic = np.around(np.array(pic)-0.1,0)
     return pic
+
+def show_path(path, state, ax):
+    drawstate = state.copy()
+    for p in path:
+        drawstate[p] = float('inf')
+    ax.imshow(drawstate)
+    #plt.show()
