@@ -1,9 +1,5 @@
 import numpy as np
-import math
-import matplotlib
 import matplotlib.pyplot as plt
-import random
-import math
 from math import inf
 
 from priority_queue import PriorityQueue, Priority
