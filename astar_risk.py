@@ -179,18 +179,35 @@ if __name__ == "__main__":
 
     c_path_2 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)# + 10**6*mask[x[0]]
     
+    path, ctr = astar_riskaware(start, goal, state.copy(), maskstate.copy(), costmap.copy(), c_path_2)
+    print("REPLANNED", ctr, "TIMES")
+    maskstatepath = np.copy(maskstate)
+    if path is None:
+        print("NO PATH FOUND!")
+    else:
+    
+        for p in path:
+            maskstatepath[p] = -float('inf')
+
+        plt.imshow(maskstate)
+        plt.show()
+        plt.imshow(maskstatepath)
+        plt.show()
+
+    c_path_2 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start) + 10**6*mask[x[0]]
+    
     path, ctr = astar_riskaware(start, goal, state, maskstate, costmap, c_path_2)
     print("REPLANNED", ctr, "TIMES")
     maskstatepath = np.copy(maskstate)
     if path is None:
         print("NO PATH FOUND!")
-        quit()
+    else:
     
-    for p in path:
-        maskstatepath[p] = -float('inf')
+        for p in path:
+            maskstatepath[p] = -float('inf')
 
-    plt.imshow(maskstate)
-    plt.show()
-    plt.imshow(maskstatepath)
-    plt.show()
+        plt.imshow(maskstate)
+        plt.show()
+        plt.imshow(maskstatepath)
+        plt.show()
 
