@@ -161,7 +161,7 @@ def run_all_planners(N,M):
     maskstate[np.where(mask==1)] = RISKY
     costmap = np.ones((N,M))
 
-    c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)
+    c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start) + 0*mask[x[0]]
     astar_path, finstate = astar(start, goal, 
                                  state.copy(), 
                                  costmap.copy(), 
