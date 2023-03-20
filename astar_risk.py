@@ -24,7 +24,9 @@ def build_path(goal, pnodes):
     path.reverse()
     return path
 
-def astar(start, goal, state, costmap, c_path):
+def astar(start, goal, s, c, c_path):
+    state = s.copy()
+    costmap = c.copy()
     # Tracks which nodes are in ondeck and when they were added to ondeck
     ondeck = [(start, 0)]
     # For any node, stores the node prior to it
@@ -128,17 +130,10 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
                     final_path.append(p)
                 else:
                     print("REPLANNING!", p)
-                    # rs[p] = -float('inf')
-                    # plt.imshow(rs)
-                    # plt.show()
-                    # rs[p[0]-1:p[0]+2, p[1]-1:p[1]+2] = s[p[0]-1:p[0]+2, p[1]-1:p[1]+2]
-                    # rs[p] = -float('inf')
-                    # plt.imshow(rs)
-                    # plt.show()
-                    rs[p[0]-1:p[0]+2, p[1]-1:p[1]+2] = s[p[0]-1:p[0]+2, p[1]-1:p[1]+2]
-                    rs[path[pidx-1]] = -float('inf')
-                    # plt.imshow(rs)
-                    # plt.show()
+                    rs[p] = s[p]
+                    rs[path[pidx-1]] = ONDECK
+                    plt.imshow(rs)
+                    plt.show()
                     epath, ctr = astar_riskaware(path[pidx-1], goal, s, rs, cmap, c_path, replan_ctr=replan_ctr+1)
                     if epath is None:
                         return None, ctr
@@ -161,23 +156,27 @@ if __name__ == "__main__":
     state, costmap, mask, start, goal = generate_world(50,100)
     m_dist = lambda x1, x2: abs(x1[0]-x2[0]) + abs(x1[1]-x2[1])
 
-    # c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)
-    # path, finstate = astar(start, goal, state.copy(), costmap, c_path_1)
-    # statepath = np.copy(state)
-    # for p in path:
-    #     statepath[p] = -float('inf')
+    c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)
+    path, finstate = astar(start, goal, state.copy(), costmap, c_path_1)
+    statepath = np.copy(state)
+    for p in path:
+        statepath[p] = -float('inf')
     
-    # plt.imshow(state)
-    # plt.show()
-    # plt.imshow(costmap)
-    # plt.show()
-    # plt.imshow(mask)
-    # plt.show()
-    # plt.imshow(statepath)
-    # plt.show()
+    plt.imshow(state)
+    plt.show()
+    plt.imshow(costmap)
+    plt.show()
+    plt.imshow(mask)
+    plt.show()
+    plt.imshow(statepath)
+    plt.show()
 
     maskstate = state.copy()
     maskstate[np.where(mask==1)] = RISKY
+
+    plt.imshow(maskstate)
+    plt.show()
+
     c_path_2 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)# + 10**6*mask[x[0]]
     
     path, ctr = astar_riskaware(start, goal, state, maskstate, costmap, c_path_2)
