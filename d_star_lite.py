@@ -8,8 +8,6 @@ class d_star:
         self.start = start
         self.end = end
 
-        self.parents = {}
-
         self.costmap = costmap
 
         self.U = PriorityQueue()
@@ -39,7 +37,7 @@ class d_star:
     def contain(self, u):
         return u in self.U.vertices_in_heap
 
-    def update_vertex(self, u, u2):
+    def update_vertex(self, u):
         if self.g[u] != self.rhs[u] and self.contain(u):
             self.U.update(u, self.calculate_key(u))
         elif self.g[u] != self.rhs[u] and not self.contain(u):
@@ -47,26 +45,22 @@ class d_star:
         elif self.g[u] == self.rhs[u] and self.contain(u):
             self.U.remove(u)
 
-        if u != u2:
-            self.parents[u] = u2
-            
-
     def replan(self, points):
         for point in points:
             self.rhs[point] = inf
             self.g[point] = inf
             self.rhs[self.start] = 100
             for n in self.get_neighbors(point):
-                min_s = inf
-                min_n = None
-                for n2 in self.get_neighbors(n):
-                    temp = self.cost(n, n2) + self.g[n2]
-                    if min_s > temp:
-                        min_s = temp
-                        min_n = n2
-                self.rhs[n] = min_s      
-                # print(n, min_n) 
-                self.update_vertex(n, min_n)
+                if n != self.end:
+                    min_s = inf
+                    min_n = None
+                    for n2 in self.get_neighbors(n):
+                        temp = self.cost(n, n2) + self.g[n2]
+                        if min_s > temp:
+                            min_s = temp
+                            min_n = n2
+                    self.rhs[n] = min_s      
+                self.update_vertex(n)
             self.state[point[0]][point[1]] = WALL
 
     def get_neighbors(self, u):
@@ -85,19 +79,15 @@ class d_star:
             k_new = self.calculate_key(u)
 
             if k_old < k_new:
-                # print("1")
                 self.U.update(u, k_new)
             elif self.g[u] > self.rhs[u]:
-                # print("2")
                 self.g[u] = self.rhs[u]
                 self.U.remove(u)
                 for n in self.get_neighbors(u):
                     if n != self.end:
                         self.rhs[n] = min(self.rhs[n], self.cost(n, u) + self.g[u])
-                    # print(n, u)
-                    self.update_vertex(n, u)
+                    self.update_vertex(n)
             else:
-                # print("3")
                 g_old = self.g[u]
                 self.g[u] = inf
 
@@ -112,8 +102,7 @@ class d_star:
                                 if min_s > temp:
                                     min_s = temp
                             self.rhs[n] = min_s
-                    # print(u, n)
-                    self.update_vertex(u, n)
+                    self.update_vertex(u)
 
     def get_path(self, db = False):
         self.compute_shortest_path()
@@ -122,10 +111,6 @@ class d_star:
             return None
 
         path = [self.start]
-        # current = self.start
-        # while current != self.end:
-        #     current = self.parents[current]
-        #     path.append(current)
         worklist = [self.start]
         path = self.rec_path2(worklist, path, db)
 
@@ -152,4 +137,3 @@ class d_star:
                     val = self.rec_path2(worklist.copy(), path.copy(), db)
                     if not None:
                         return val
-                    
