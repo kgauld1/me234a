@@ -1,6 +1,9 @@
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 from perlin_noise import PerlinNoise
+from math import inf
+from priority_queue import PriorityQueue, Priority
 
 RISKY = -1
 WALL = 0
