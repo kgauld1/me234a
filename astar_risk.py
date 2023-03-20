@@ -49,7 +49,7 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
                 if state[p] != WALL:
                     final_path.append(p)
                 else:
-                    print("REPLANNING!", p)
+                    #print("REPLANNING!", p)
                     rs[p] = s[p]
                     rs[path[pidx-1]] = ONDECK
                     # plt.imshow(rs)
@@ -105,15 +105,6 @@ def run_all_planners(N,M):
 
     return state, maskstate, costmap, astar_path, \
         opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr
-
-
-
-def show_path(path, state, ax):
-    drawstate = state.copy()
-    for p in path:
-        drawstate[p] = float('inf')
-    ax.imshow(drawstate)
-    #plt.show()
 
 if __name__ == "__main__":
     state, maskstate, costmap, astar_path, \

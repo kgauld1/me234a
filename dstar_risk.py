@@ -7,7 +7,7 @@ def replan_path(dstarobj, state, replan_ctr=0):
         return path, replan_ctr
     for p in path:
         if state[p] == WALL:
-            print("REPLANNING!")
+            #print("REPLANNING!")
             dstarobj.replan([p])
             return replan_path(dstarobj, state, replan_ctr=replan_ctr+1)
     return path, replan_ctr
