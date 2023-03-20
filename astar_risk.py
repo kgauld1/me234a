@@ -9,6 +9,8 @@ UNKNOWN = 1
 ONDECK = 2
 PROCESSED = 3
 
+m_dist = lambda x1, x2: abs(x1[0]-x2[0]) + abs(x1[1]-x2[1])
+
 def build_path(goal, pnodes):
     # Start the path at the end
     path = [goal]
@@ -132,8 +134,8 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
                     print("REPLANNING!", p)
                     rs[p] = s[p]
                     rs[path[pidx-1]] = ONDECK
-                    plt.imshow(rs)
-                    plt.show()
+                    # plt.imshow(rs)
+                    # plt.show()
                     epath, ctr = astar_riskaware(path[pidx-1], goal, s, rs, cmap, c_path, replan_ctr=replan_ctr+1)
                     if epath is None:
                         return None, ctr
@@ -152,62 +154,70 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
         riskystate[current] = PROCESSED
     
     return None, replan_ctr
-if __name__ == "__main__":
-    state, costmap, mask, start, goal = generate_world(50,100)
-    m_dist = lambda x1, x2: abs(x1[0]-x2[0]) + abs(x1[1]-x2[1])
 
-    c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)
-    path, finstate = astar(start, goal, state.copy(), costmap, c_path_1)
-    statepath = np.copy(state)
-    for p in path:
-        statepath[p] = -float('inf')
-    
-    plt.imshow(state)
-    plt.show()
-    plt.imshow(costmap)
-    plt.show()
-    plt.imshow(mask)
-    plt.show()
-    plt.imshow(statepath)
-    plt.show()
-
+def run_all_planners(N,M):
+    state, costmap, mask, start, goal = generate_world(N,M)
     maskstate = state.copy()
     maskstate[np.where(mask==1)] = RISKY
+    costmap = np.ones((N,M))
 
-    plt.imshow(maskstate)
-    plt.show()
-
-    c_path_2 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)# + 10**6*mask[x[0]]
+    c_path_1 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start)
+    astar_path, finstate = astar(start, goal, 
+                                 state.copy(), 
+                                 costmap.copy(), 
+                                 c_path_1)
     
-    path, ctr = astar_riskaware(start, goal, state.copy(), maskstate.copy(), costmap.copy(), c_path_2)
-    print("REPLANNED", ctr, "TIMES")
-    maskstatepath = np.copy(maskstate)
-    if path is None:
-        print("NO PATH FOUND!")
-    else:
+    opp_path, opp_ctr = astar_riskaware(start, goal, 
+                                        state.copy(), 
+                                        maskstate.copy(), 
+                                        costmap.copy(), 
+                                        c_path_1)
     
-        for p in path:
-            maskstatepath[p] = -float('inf')
-
-        plt.imshow(maskstate)
-        plt.show()
-        plt.imshow(maskstatepath)
-        plt.show()
-
     c_path_2 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start) + 10**6*mask[x[0]]
+    av_path, av_ctr = astar_riskaware(start, goal, 
+                                      state.copy(), 
+                                      maskstate.copy(), 
+                                      costmap.copy(), c_path_2)
     
-    path, ctr = astar_riskaware(start, goal, state, maskstate, costmap, c_path_2)
-    print("REPLANNED", ctr, "TIMES")
-    maskstatepath = np.copy(maskstate)
-    if path is None:
-        print("NO PATH FOUND!")
-    else:
+    c_path_3 = lambda x: 1*x[1] + 1*m_dist(x[0], goal) + 1*m_dist(x[0], start) + 10*mask[x[0]]
+    med_path, med_ctr = astar_riskaware(start, goal, 
+                                        state.copy(), 
+                                        maskstate.copy(), 
+                                        costmap.copy(), c_path_3)
+
+    return state, maskstate, costmap, astar_path, \
+        opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr
+
+
+
+def show_path(path, state, ax):
+    drawstate = state.copy()
+    for p in path:
+        drawstate[p] = float('inf')
+    ax.imshow(drawstate)
+    #plt.show()
+
+if __name__ == "__main__":
+    state, maskstate, costmap, astar_path, \
+        opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr = run_all_planners(50,100)
     
-        for p in path:
-            maskstatepath[p] = -float('inf')
+    print("ASTAR PATH LEN:", len(astar_path))
+    print("OPPORTUNISTIC PATH LEN:", len(opp_path), 
+          "\tPROPORTION:", len(opp_path)/len(astar_path),
+          "\tREPLANS:", opp_ctr)
+    print("RISK-AVERSE PATH LEN:", len(av_path), 
+          "\tPROPORTION:", len(av_path)/len(astar_path),
+          "\tREPLANS:", av_ctr)
+    print("MODERATE PATH LEN:", len(med_path), 
+          "\tPROPORTION:", len(med_path)/len(astar_path),
+          "\tREPLANS:", opp_ctr)
+    
+    _, axs = plt.subplots(4, 1, figsize=(6, 9))
+    axs = axs.flatten()
 
-        plt.imshow(maskstate)
-        plt.show()
-        plt.imshow(maskstatepath)
-        plt.show()
+    show_path(astar_path, state, axs[0])
+    show_path(opp_path, maskstate, axs[1])
+    show_path(av_path, maskstate, axs[2])
+    show_path(med_path, maskstate, axs[3])
 
+    plt.show()
