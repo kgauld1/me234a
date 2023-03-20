@@ -63,7 +63,7 @@ class d_star:
         for point in points:
             self.state[point[0]][point[1]] = WALL
             self.rhs[point] = inf
-            self.rhs[self.start] = 100
+            self.rhs[self.start] = 200
             for n in self.get_neighbors(point):
                 self.rhs[point] = inf
                 self.update_vertex(n)
