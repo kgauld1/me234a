@@ -6,10 +6,14 @@ def replan_path(dstarobj, state, replan_ctr=0):
     path = dstarobj.get_path()
     if path == None: 
         return path, replan_ctr
+    _, axs = plt.subplots(1, 1, figsize=(6, 9))
+    show_path(path,state,axs)
+    plt.show()
     for p in path:
         if state[p] == WALL:
             print("REPLANNING!")
             dstarobj.replan([p])
+            print(p)
             return replan_path(dstarobj, state, replan_ctr=replan_ctr+1)
     return path, replan_ctr
 
