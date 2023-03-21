@@ -88,7 +88,7 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
     return None, replan_ctr
 
 def run_all_planners(N,M):
-    state, costmap, mask, start, goal = generate_world(N,M)
+    state, costmap, mask, start, goal = generate_world(N,M,risk_t=-0.1)
     maskstate = state.copy()
     maskstate[np.where(mask==1)] = RISKY
     costmap = np.ones((N,M))

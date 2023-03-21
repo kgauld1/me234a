@@ -61,12 +61,11 @@ def generate_world(M, N, wall_prob = 0.1, adj_prob = 0.4, risk_t=-0.1):
     mask = maskgen(M,N,risk_t=risk_t)
     return state, costmap, mask, start, end
 
-def maskgen(M,N, risk_t=-0.1):
-    noise = PerlinNoise(octaves=10, seed=1)
+def maskgen(M,N,risk_t=-0.1):
+    noise = PerlinNoise(octaves=10)
     xpix, ypix = N, M
     pic = np.array([[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)])
-    pic -= np.min(pic)
-    pic /= np.ptp(pic)
+    pic = (pic-np.min(pic))/np.ptp(pic)
     pic = np.around(np.array(pic)+risk_t,0)
     return pic
 
