@@ -18,14 +18,14 @@ def get_stats(N,M):
              None if med_path_astar == None else len(med_path_astar), med_ctr_astar, med_astar_t]
     return stats
 
-COLUMN_NAMES = ['norisk d* len', 'norisk d* t', 
-                'opp path d* len', 'opp ctr d*', 'opp d* t',
-                'av path d* len', 'av ctr d*', 'av d* t',
-                'med path d* len', 'med ctr d*', 'med d* t',
-                'norisk a* len', 'norisk a* t', 
-                'opp path a* len', 'opp ctr a*', 'opp a* t',
-                'av path a* len', 'av ctr a*', 'av a* t',
-                'med path a* len', 'med ctr a*', 'med a* t']
+COLUMN_NAMES = ["Base D* Path Length","Base D* Time","Opportunistic D* Path Length",
+                "Opportunistic D* # Replans","Opportunistic D* Time", "Risk-Averse D* Path Length",
+                "Risk-Averse D* # Replans", "Risk-Averse D* Time", "Moderate Aversion D* Path Length",
+                "Moderate Aversion D* # Replans", "Moderate Aversion D* Time", "Base A* Path Length",
+                "Base A* Time", "Opportunistic A* Path Length", "Opportunistic A* # Replans",
+                "Opportunistic A* Time","Risk-Averse A* Path Length", "Risk-Averse A* # Replans",
+                "Risk-Averse A* Time", "Moderate Aversion A* Path Length", 
+                "Moderate Aversion A* # Replans", "Moderate Aversion A* Time"]
 
 if __name__ == "__main__":
     stats = []
