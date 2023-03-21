@@ -88,7 +88,7 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
     return None, replan_ctr
 
 def run_all_planners(N,M):
-    state, costmap, mask, start, goal = generate_world(N,M,risk_t=-0.1)
+    state, costmap, mask, start, goal = generate_world(N,M,risk_t=0.5)
     maskstate = state.copy()
     maskstate[np.where(mask==1)] = RISKY
     costmap = np.ones((N,M))
@@ -129,9 +129,10 @@ if __name__ == "__main__":
     plt.show()
 
     print("ASTAR PATH LEN:", len(astar_path))
-    print("OPPORTUNISTIC PATH LEN:", len(opp_path), 
-          "\tPROPORTION:", len(opp_path)/len(astar_path),
-          "\tREPLANS:", opp_ctr)
+    if opp_path != None:
+        print("OPPORTUNISTIC PATH LEN:", len(opp_path), 
+            "\tPROPORTION:", len(opp_path)/len(astar_path),
+            "\tREPLANS:", opp_ctr)
     print("RISK-AVERSE PATH LEN:", len(av_path), 
           "\tPROPORTION:", len(av_path)/len(astar_path),
           "\tREPLANS:", av_ctr)
@@ -143,7 +144,8 @@ if __name__ == "__main__":
     axs = axs.flatten()
 
     show_path(astar_path, state, axs[0])
-    show_path(opp_path, maskstate, axs[1])
+    if opp_path != None:
+        show_path(opp_path, maskstate, axs[1])
     show_path(av_path, maskstate, axs[2])
     show_path(med_path, maskstate, axs[3])
 

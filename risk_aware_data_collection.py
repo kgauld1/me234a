@@ -51,9 +51,9 @@ if __name__ == "__main__":
     stats = []
     st = time.perf_counter()
     for i in range(100):
-        stats.append(get_stats(50,50))
+        stats.append(get_stats(50,50,risk_t=-0.1))
         if (i+1)%10 == 0: print(i+1, "% done")
     print(time.perf_counter()-st)
     df = pd.DataFrame(np.array(stats), columns=COLUMN_NAMES)
     #print(df)
-    df.to_csv('data/data50x50.csv')
+    df.to_csv('data/dataneg1.csv')
