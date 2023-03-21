@@ -109,7 +109,11 @@ def run_all_planners(N,M):
 if __name__ == "__main__":
     state, maskstate, costmap, astar_path, \
         opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr = run_all_planners(50,100)
-    
+    _, axs = plt.subplots(1, 2, figsize=(6, 9))
+    show_path([], state, axs[0])
+    show_path([], maskstate, axs[1])
+    plt.show()
+
     print("ASTAR PATH LEN:", len(astar_path))
     print("OPPORTUNISTIC PATH LEN:", len(opp_path), 
           "\tPROPORTION:", len(opp_path)/len(astar_path),

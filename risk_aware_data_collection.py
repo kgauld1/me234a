@@ -31,9 +31,9 @@ if __name__ == "__main__":
     stats = []
     st = time.perf_counter()
     for i in range(100):
-        stats.append(get_stats(50,50))
+        stats.append(get_stats(50,100))
         if (i+1)%10 == 0: print(i+1, "% done")
     print(time.perf_counter()-st)
     df = pd.DataFrame(np.array(stats), columns=COLUMN_NAMES)
     #print(df)
-    df.to_csv('data.csv')
+    df.to_csv('data2.csv')
