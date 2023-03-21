@@ -1,6 +1,5 @@
 from utils import *
 from risk_aware_planner import run_all_planners
-import pandas as pd
 
 def get_stats(N,M):
     state, costmap, mask, maskstate, \
