@@ -71,8 +71,6 @@ def maskgen(M,N):
     return pic
 
 def show_path(path, state, ax):
-    drawstate = state.copy()
+    ax.imshow(state)
     for p in path:
-        drawstate[p] = float('inf')
-    ax.imshow(drawstate)
-    #plt.show()
+        ax.plot(p[1], p[0], marker='.', color='red', linewidth=1)
