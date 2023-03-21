@@ -21,6 +21,13 @@ def astar(start, goal, s, c, c_path):
                     state[nnode] = ONDECK
                     ondeck.append((nnode, cur_cost + costmap[nnode]))
                     prior_node[nnode] = current
+                elif state[nnode] == ONDECK:
+                    for n in range(len(ondeck)):
+                        if ondeck[n][0] == nnode:
+                            if ondeck[n][1] > cur_cost + costmap[nnode]:
+                                ondeck[n] = (nnode, cur_cost + costmap[nnode])
+                                prior_node[nnode] = current
+                            break
         
         state[current] = PROCESSED
     
@@ -68,6 +75,13 @@ def astar_riskaware(start, goal, s, rs, cmap, c_path, replan_ctr=0):
                     riskystate[nnode] = ONDECK
                     ondeck.append((nnode, cur_cost + costmap[nnode]))
                     prior_node[nnode] = current
+                elif riskystate[nnode] == ONDECK:
+                    for n in range(len(ondeck)):
+                        if ondeck[n][0] == nnode:
+                            if ondeck[n][1] > cur_cost + costmap[nnode]:
+                                ondeck[n] = (nnode, cur_cost + costmap[nnode])
+                                prior_node[nnode] = current
+                            break
         
         riskystate[current] = PROCESSED
     
