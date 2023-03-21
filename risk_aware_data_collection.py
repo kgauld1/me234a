@@ -1,12 +1,13 @@
 from utils import *
 from risk_aware_planner import run_all_planners
 
-def get_stats(N,M):
+def get_stats(N,M,risk_t=-0.1):
     state, costmap, mask, maskstate, \
         norisk_dstar, norisk_dstar_t, opp_path_dstar, opp_ctr_dstar, opp_dstar_t,\
         av_path_dstar, av_ctr_dstar, av_dstar_t, med_path_dstar, med_ctr_dstar, med_dstar_t,\
         norisk_astar, norisk_astar_t, opp_path_astar, opp_ctr_astar, opp_astar_t,\
-        av_path_astar, av_ctr_astar, av_astar_t, med_path_astar, med_ctr_astar, med_astar_t = run_all_planners(N,M)
+        av_path_astar, av_ctr_astar, av_astar_t, \
+        med_path_astar, med_ctr_astar, med_astar_t = run_all_planners(N,M,risk_t=risk_t)
     
     if opp_path_dstar == None:
         opp_ctr_dstar = None

@@ -65,8 +65,8 @@ def run_all_astar(state, costmap, maskstate, mask, start, goal):
 
     return astar_path, astartime, opp_path, opp_ctr, opptime, av_path, av_ctr, avtime, med_path, med_ctr, medtime
 
-def run_all_planners(N,M):
-    state, costmap, mask, start, goal = generate_world(N,M)
+def run_all_planners(N,M,risk_t=-0.1):
+    state, costmap, mask, start, goal = generate_world(N,M,risk_t=risk_t)
     maskstate = state.copy()
     maskstate[np.where(mask==1)] = RISKY
     costmap = np.ones((N,M))

@@ -30,7 +30,7 @@ def build_path(goal, pnodes):
     path.reverse()
     return path
 
-def generate_world(M, N, wall_prob = 0.1, adj_prob = 0.4):
+def generate_world(M, N, wall_prob = 0.1, adj_prob = 0.4, risk_t=-0.1):
     state = np.ones((M, N)) * UNKNOWN
     costmap = -np.ones((M,N))
 
@@ -58,16 +58,16 @@ def generate_world(M, N, wall_prob = 0.1, adj_prob = 0.4):
     while state[end] == WALL:
         end = (random.randint(1,M-1), random.randint(1,N-1))
 
-    mask = maskgen(M,N)
+    mask = maskgen(M,N,risk_t=risk_t)
     return state, costmap, mask, start, end
 
-def maskgen(M,N):
+def maskgen(M,N, risk_t=-0.1):
     noise = PerlinNoise(octaves=10, seed=1)
     xpix, ypix = N, M
     pic = np.array([[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)])
     pic -= np.min(pic)
     pic /= np.ptp(pic)
-    pic = np.around(np.array(pic)-0.1,0)
+    pic = np.around(np.array(pic)+risk_t,0)
     return pic
 
 def show_path(path, state, ax):
