@@ -125,28 +125,28 @@ if __name__ == "__main__":
         opp_path, opp_ctr, av_path, av_ctr, med_path, med_ctr = run_all_planners(50,50,risk_t=-0.1)
     
 
-    # m1 = maskgen(50,50,risk_t=-0.1)
-    # m2 = maskgen(50,50,risk_t=0)
-    # m3 = maskgen(50,50,risk_t=0.1)
-    # rm1 = state.copy()
-    # rm2 = state.copy()
-    # rm3 = state.copy()
-    # rm1[np.where(m1==1)] = -1
-    # rm2[np.where(m2==1)] = -1
-    # rm3[np.where(m3==1)] = -1
-    # _, axs = plt.subplots(2, 2, figsize=(9, 9))
-    # axs = axs.flatten()
+    m1 = maskgen(50,50,risk_t=-0.1)
+    m2 = maskgen(50,50,risk_t=0)
+    m3 = maskgen(50,50,risk_t=0.1)
+    rm1 = state.copy()
+    rm2 = state.copy()
+    rm3 = state.copy()
+    rm1[np.where(m1==1)] = -1
+    rm2[np.where(m2==1)] = -1
+    rm3[np.where(m3==1)] = -1
+    _, axs = plt.subplots(2, 2, figsize=(9, 9))
+    axs = axs.flatten()
 
-    # axs[0].set_title("Original State")
-    # axs[1].set_title("40% Risk")
-    # axs[2].set_title("50% Risk")
-    # axs[3].set_title("60% Risk")
+    axs[0].set_title("Original State")
+    axs[1].set_title("40% Risk")
+    axs[2].set_title("50% Risk")
+    axs[3].set_title("60% Risk")
 
-    # axs[0].imshow(state)
-    # axs[1].imshow(rm1)
-    # axs[2].imshow(rm2)
-    # axs[3].imshow(rm3)
-    # plt.show()
+    axs[0].imshow(state)
+    axs[1].imshow(rm1)
+    axs[2].imshow(rm2)
+    axs[3].imshow(rm3)
+    plt.show()
 
     print("ASTAR PATH LEN:", len(astar_path))
     if opp_path != None:
