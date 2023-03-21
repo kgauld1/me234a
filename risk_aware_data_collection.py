@@ -1,13 +1,13 @@
 from utils import *
 from risk_aware_planner import run_all_planners
 
-def get_stats(N,M,risk_t=-0.1):
+def get_stats(N,M,risk_t=-0.1,uniform=True):
     state, costmap, mask, maskstate, \
         norisk_dstar, norisk_dstar_t, opp_path_dstar, opp_ctr_dstar, opp_dstar_t,\
         av_path_dstar, av_ctr_dstar, av_dstar_t, med_path_dstar, med_ctr_dstar, med_dstar_t,\
         norisk_astar, norisk_astar_t, opp_path_astar, opp_ctr_astar, opp_astar_t,\
         av_path_astar, av_ctr_astar, av_astar_t, \
-        med_path_astar, med_ctr_astar, med_astar_t = run_all_planners(N,M,risk_t=risk_t)
+        med_path_astar, med_ctr_astar, med_astar_t = run_all_planners(N,M,risk_t=risk_t,uniform=uniform)
     
     if opp_path_dstar == None:
         opp_ctr_dstar = None
@@ -51,9 +51,9 @@ if __name__ == "__main__":
     stats = []
     st = time.perf_counter()
     for i in range(100):
-        stats.append(get_stats(50,50,risk_t=-0.1))
+        stats.append(get_stats(50,50,risk_t=-0.1,uniform=False))
         if (i+1)%10 == 0: print(i+1, "% done")
     print(time.perf_counter()-st)
     df = pd.DataFrame(np.array(stats), columns=COLUMN_NAMES)
     #print(df)
-    df.to_csv('data/dataneg1.csv')
+    df.to_csv('data/data_nonuniform.csv')
