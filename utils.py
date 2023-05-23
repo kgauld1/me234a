@@ -73,3 +73,8 @@ def show_path(path, state, ax):
     ax.imshow(state)
     for p in path:
         ax.plot(p[1], p[0], marker='.', color='red', linewidth=1)
+
+if __name__ == "__main__":
+    plt.imshow(maskgen(400,400,risk_t=-0.1))
+    plt.axis("off")
+    plt.show()
